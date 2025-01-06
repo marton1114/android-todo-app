@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.teendoapp" />
+                  <option name="mobileSdkAppId" value="1:196986613222:android:51b790cbf6cde2facc3a27" />
+                  <option name="projectId" value="teendoapp" />
+                  <option name="projectNumber" value="196986613222" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -1,17 +1,15 @@
 package com.example.teendoapp.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "task")
 data class Task(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
+    val id: String = "",
+    val userId: String = "",
+    val titleId: String = "",
     val title: String = "",
     val description: String = "",
-    val importance: Int = 5,
+    val progression: Int = 1,
+    val creationTime: Long = 0L,
     val startTime: Long = 0L,
     val endTime: Long = 0L,
-    val isDone: Boolean = false,
+    val finishTime: Long = 0L,
+    val finished: Boolean = false,
 )

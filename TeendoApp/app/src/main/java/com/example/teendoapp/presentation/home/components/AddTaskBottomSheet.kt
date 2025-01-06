@@ -3,23 +3,24 @@ package com.example.teendoapp.presentation.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
@@ -33,7 +34,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -43,9 +43,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.teendoapp.ui.theme.BeetRootGrey97
 import com.example.teendoapp.ui.theme.importanceColors
 import com.example.teendoapp.ui.theme.importanceTextColors
 
@@ -54,6 +54,9 @@ import com.example.teendoapp.ui.theme.importanceTextColors
 fun AddTaskBottomSheet(
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
+
+    taskTitleIdValue: String,
+    onTaskTitleIdValueChange: (newValue: String) -> Unit,
 
     taskTitleValue: String,
     onTaskTitleValueChange: (newValue: String) -> Unit,
@@ -64,30 +67,26 @@ fun AddTaskBottomSheet(
     startDateValue: String,
     endDateValue: String,
 
-    startTimeValue: String,
-    endTimeValue: String,
-
     importanceValue: Int,
     onImportanceValueChange: (newValue: Int) -> Unit,
 
     onStartDateClick: () -> Unit,
     onEndDateClick: () -> Unit,
-    onStartTimeClick: () -> Unit,
-    onEndTimeClick: () -> Unit,
 
     onAddButtonClick: () -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         dragHandle = null,
-        shape = RectangleShape,
+//        shape = RectangleShape,
         sheetState = sheetState,
+        windowInsets = WindowInsets.ime
     ) {
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
                 .padding(12.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
@@ -122,110 +121,62 @@ fun AddTaskBottomSheet(
             }
             Spacer(modifier = Modifier.height(6.dp))
 
-            Text(text = "Teendő (Röviden)", style = MaterialTheme.typography.titleMedium,
+            Text(text = "Sorszám és teendő (Röviden)", style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold)
-            OutlinedTextField(value = taskTitleValue, onValueChange = onTaskTitleValueChange,
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(15.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                OutlinedTextField(value = taskTitleIdValue, onValueChange = onTaskTitleIdValueChange,
+                    modifier = Modifier.width(70.dp), shape = RoundedCornerShape(15.dp),
+                    singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number) )
+                OutlinedTextField(value = taskTitleValue, onValueChange = onTaskTitleValueChange,
+                    modifier = Modifier.weight(1F), shape = RoundedCornerShape(15.dp))
+            }
             Spacer(modifier = Modifier.height(6.dp))
             Text(text = "Leírás (opcionális)", style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold)
             OutlinedTextField(value = taskDescriptionValue, onValueChange = onTaskDescriptionValueChange,
                 modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(15.dp))
             Spacer(modifier = Modifier.height(6.dp))
+            Text(text = "Aktualitás kezdete és határidő", style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(text = "Létrehozás napja", style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold)
-                    Row(
-                        modifier = Modifier
-                            .height(54.dp)
-                            .fillMaxWidth()
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .clickable { onStartDateClick() }
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = startDateValue)
-                        Icon(imageVector = Icons.Default.DateRange, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline)
-                    }
+                Row(
+                    modifier = Modifier
+                        .height(54.dp)
+                        .weight(1F)
+                        .clip(RoundedCornerShape(15.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(15.dp))
+                        .clickable { onStartDateClick() }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = startDateValue)
+                    Icon(imageVector = Icons.Default.DateRange, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 }
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(text = "Létrehozás időpontja", style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold)
-                    Row(
-                        modifier = Modifier
-                            .height(54.dp)
-                            .fillMaxWidth()
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .clickable { onStartTimeClick() }
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = startTimeValue)
-                        Icon(imageVector = Icons.Default.AccessTime, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline)
-                    }
+
+                Row(
+                    modifier = Modifier
+                        .height(54.dp)
+                        .weight(1F)
+                        .clip(RoundedCornerShape(15.dp))
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline,
+                            RoundedCornerShape(15.dp)
+                        )
+                        .clickable { onEndDateClick() }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = endDateValue)
+                    Icon(imageVector = Icons.Default.DateRange, contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline)
                 }
             }
             Spacer(modifier = Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(text = "Határidő napja", style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold)
-                    Row(
-                        modifier = Modifier
-                            .height(54.dp)
-                            .fillMaxWidth()
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .clickable { onEndDateClick() }
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = endDateValue)
-                        Icon(imageVector = Icons.Default.DateRange, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline)
-                    }
-                }
-                Column(modifier = Modifier.weight(1F)) {
-                    Text(text = "Határidő időpontja", style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold)
-                    Row(
-                        modifier = Modifier
-                            .height(54.dp)
-                            .fillMaxWidth()
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(15.dp)
-                            )
-                            .clickable { onEndTimeClick() }
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(text = endTimeValue)
-                        Icon(imageVector = Icons.Default.AccessTime, contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline)
-                    }
-                }
-            }
-            Text(text = "Fontosság", style = MaterialTheme.typography.titleMedium,
+            Text(text = "Haladás", style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold)
             val interactionSource = remember {
                 MutableInteractionSource()
@@ -262,7 +213,7 @@ fun AddTaskBottomSheet(
                 },
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
